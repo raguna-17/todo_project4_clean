@@ -1,0 +1,193 @@
+{% extends 'todo/base.html' %}
+{% load static %}
+
+{% block title %}一覧 - ToDo{% endblock %}
+
+{% block content %}
+<p>
+    <button id="create-task-btn">新しいタスクを作成</button>
+</p>
+
+<ul id="task-list"></ul>
+
+<!-- =========================
+     編集モーダル
+========================= -->
+<div id="edit-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);">
+    <div style="background:#fff; width:400px; margin:10% auto; padding:20px;">
+        <h3>タスク編集</h3>
+
+        <input type="hidden" id="edit-task-id">
+
+        <p>
+            <label>タイトル</label><br>
+            <input type="text" id="edit-title" style="width:100%;">
+        </p>
+
+        <p>
+            <label>説明</label><br>
+            <textarea id="edit-description" rows="4" style="width:100%;"></textarea>
+        </p>
+
+        <p>
+            <label>
+                <input type="checkbox" id="edit-completed">
+                完了
+            </label>
+        </p>
+
+        <button onclick="saveEdit()">保存</button>
+        <button onclick="closeEditModal()">キャンセル</button>
+    </div>
+</div>
+
+<script src="{% static 'js/Sortable.min.js' %}"></script>
+<script>
+    let sortable = null;
+
+    // =========================
+    // 一覧取得
+    // =========================
+    async function fetchTasks() {
+        const response = await fetch('/api/tasks/');
+        const tasks = await response.json();
+        const list = document.getElementById('task-list');
+        list.innerHTML = '';
+
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.dataset.id = task.id;
+
+            li.innerHTML = `
+            <strong style="${task.completed ? 'text-decoration: line-through' : ''}">
+                ${task.title}
+            </strong>
+            — ${new Date(task.created_at).toLocaleString()}
+
+            <button onclick="toggleComplete(${task.id}, ${task.completed})">
+                ${task.completed ? '未完了にする' : '完了にする'}
+            </button>
+
+            <button onclick="openEditModal(${task.id})">編集</button>
+
+            <button onclick="deleteTask(${task.id})">削除</button>
+        `;
+            list.appendChild(li);
+        });
+
+        if (!sortable) {
+            sortable = Sortable.create(list, {
+                animation: 150,
+                onEnd: async () => {
+                    const order = [...list.children].map(li => li.dataset.id);
+                    await fetch('/api/tasks/reorder/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ order })
+                    });
+                }
+            });
+        }
+    }
+
+    // =========================
+    // 編集モーダル
+    // =========================
+    async function openEditModal(id) {
+        const res = await fetch(`/api/tasks/${id}/`);
+        const task = await res.json();
+
+        document.getElementById('edit-task-id').value = task.id;
+        document.getElementById('edit-title').value = task.title;
+        document.getElementById('edit-description').value = task.description;
+        document.getElementById('edit-completed').checked = task.completed;
+
+        document.getElementById('edit-modal').style.display = 'block';
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-modal').style.display = 'none';
+    }
+
+    // =========================
+    // 編集保存
+    // =========================
+    async function saveEdit() {
+        const id = document.getElementById('edit-task-id').value;
+
+        await fetch(`/api/tasks/${id}/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                title: document.getElementById('edit-title').value,
+                description: document.getElementById('edit-description').value,
+                completed: document.getElementById('edit-completed').checked
+            })
+        });
+
+        closeEditModal();
+        fetchTasks();
+    }
+
+    // =========================
+    // その他CRUD
+    // =========================
+    async function toggleComplete(id, completed) {
+        await fetch(`/api/tasks/${id}/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ completed: !completed })
+        });
+        fetchTasks();
+    }
+
+    async function deleteTask(id) {
+        await fetch(`/api/tasks/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        fetchTasks();
+    }
+
+    async function createTask() {
+        const title = prompt('タスクのタイトルを入力してください');
+        if (!title) return;
+
+        await fetch('/api/tasks/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ title })
+        });
+        fetchTasks();
+    }
+
+    // =========================
+    // CSRF
+    // =========================
+    function getCookie(name) {
+        let value = null;
+        document.cookie.split(';').forEach(c => {
+            c = c.trim();
+            if (c.startsWith(name + '=')) {
+                value = decodeURIComponent(c.slice(name.length + 1));
+            }
+        });
+        return value;
+    }
+
+    document.getElementById('create-task-btn').addEventListener('click', createTask);
+    fetchTasks();
+</script>
+{% endblock %}
