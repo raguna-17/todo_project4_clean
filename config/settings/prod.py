@@ -16,6 +16,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://todo-project4-clean.onrender.com",
 ]
 
-# Whitenoise用の設定
+# Manifestはいれたらあかん
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
