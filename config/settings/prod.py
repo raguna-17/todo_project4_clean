@@ -1,7 +1,11 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ["todo-project4-clean.onrender.com"]
+
+ALLOWED_HOSTS = [
+    "todo-project4-clean.onrender.com",
+    ".onrender.com",
+]
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
