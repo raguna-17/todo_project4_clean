@@ -31,4 +31,4 @@ EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 
 # CMD: Webサーバ起動のみ
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+CMD sh -c "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
