@@ -14,17 +14,9 @@ db.sqlite3
 media/
 staticfiles/
 .env
-.env.*
-
-# Virtual environment (もし使う場合)
-venv/
-env/
-.venv/
 
 # Docker
 *.env
-docker-compose.override.yml
-**/docker-compose.override.yml
 **/Dockerfile.*
 
 # IDE / Editor

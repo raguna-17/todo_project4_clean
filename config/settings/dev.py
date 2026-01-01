@@ -7,8 +7,6 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 DATABASES = {
     "default": {
@@ -16,4 +14,3 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-#local
