@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "todo-project4-clean.onrender.com",
@@ -17,4 +17,5 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Whitenoise用の設定
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
