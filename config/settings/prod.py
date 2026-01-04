@@ -9,9 +9,6 @@ ALLOWED_HOSTS = [
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 CSRF_TRUSTED_ORIGINS = [
     "https://todo-project4-clean.onrender.com",
 ]
