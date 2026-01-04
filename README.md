@@ -52,20 +52,6 @@ pytestによる単体テストが実装済み
 カバレッジ測定も可能で、コードの品質を確認できます
 
 
-## ディレクトリ構成（ファイル概要）
-
-todo_project4_clean/
-├─ todo/          
-│  ├─ templates/  
-│  ├─ static/     
-│  ├─ api_views.py
-│  └─ models.py
-├─ Dockerfile
-├─ docker-compose.yml
-└─ requirements.txt
-
-
-
 ## API エンドポイント一覧
 
 | HTTP メソッド | URL | 説明 |
