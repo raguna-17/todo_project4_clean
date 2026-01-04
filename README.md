@@ -55,9 +55,9 @@ pytestによる単体テストが実装済み
 ## ディレクトリ構成（ファイル概要）
 
 todo_project4_clean/
-├─ todo/          # Djangoアプリ本体
-│  ├─ templates/  # HTMLテンプレート
-│  ├─ static/     # CSS/JS
+├─ todo/          
+│  ├─ templates/  
+│  ├─ static/     
 │  ├─ api_views.py
 │  └─ models.py
 ├─ Dockerfile
